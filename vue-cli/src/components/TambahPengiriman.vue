@@ -17,7 +17,7 @@
             </v-card-title>
         </v-card>
         <v-card>
-            <v-data-table :items="pengiriman" :headers="headers" :search="search" item-key="name" class="elevation-1">
+            <v-data-table :items="pengirimans" :headers="headers" :search="search" item-key="name" class="elevation-1">
                 <template v-slot:[`item.actions`]="{ item }">
                     <v-btn class="ma-2" outlined small color="error" @click="dialogEdit = true; itemContent = item; editItem(item)">
                         <v-icon>mdi-pencil</v-icon>
@@ -33,27 +33,27 @@
                 <v-toolbar color="orange darken-1" dark class="headline">Tambah Pengiriman</v-toolbar>
                 <v-card-text>
                     <v-container>
-                        <v-text-field v-model="kodePengiriman" :rules="nameRules" label="Kode Pengiriman" required></v-text-field>
-                        <v-text-field v-model="namaPenerima" :rules="nameRules" label="Nama Penerima" required></v-text-field>
-                        <v-textarea v-model="alamat" :rules="nameRules" label="Alamat" required></v-textarea>
+                        <v-text-field v-model="formPengiriman.kodePengiriman" :rules="nameRules" label="Kode Pengiriman" required></v-text-field>
+                        <v-text-field v-model="formPengiriman.namaPenerima" :rules="nameRules" label="Nama Penerima" required></v-text-field>
+                        <v-textarea v-model="formPengiriman.alamat" :rules="nameRules" label="Alamat" required></v-textarea>
                         <v-select
                             class="textfield mt-3"
-                            v-model="jenisBarang"
+                            v-model="formPengiriman.jenisBarang"
                             :items="[`Makanan`,`Apparel`,`Elektronik`,`Otomotif`,'Furnitur']"
                             label="Jenis Barang" required 
                             :rules="inputRules">
                         </v-select>
                         <v-select
                             class="textfield mt-3"
-                            v-model="jenisPengiriman"
+                            v-model="formPengiriman.jenisPengiriman"
                             :items="[`Reguler`,`Ekonomis`,`Ekspress`]"
                             label="Jenis Pengiriman" required 
                             :rules="inputRules">
                         </v-select>
                         <v-select
                             class="textfield mt-3"
-                            v-model="berat"
-                            :items="[`<5Kg`,`>5Kg`,`>10Kg`,'>20Kg','>30Kg']"
+                            v-model="formPengiriman.berat"
+                            :items="[`<5Kg`,`>5Kg`,`>10Kg`,`>20Kg`,`>30Kg`]"
                             label="Berat Barang" required 
                             :rules="inputRules">
                         </v-select>
@@ -66,6 +66,44 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-dialog transition="dialog-bottom-transition" v-model="dialogEdit" persistent max-width="600px">
+            <v-card>
+                <v-toolbar color="orange darken-1" dark class="headline">Edit Pengiriman</v-toolbar>
+                <v-card-text>
+                    <v-container>
+                        <v-text-field v-model="formPengirimanEdit.kodePengiriman" :rules="nameRules" label="Kode Pengiriman" required></v-text-field>
+                        <v-text-field v-model="formPengirimanEdit.namaPenerima" :rules="nameRules" label="Nama Penerima" required></v-text-field>
+                        <v-textarea v-model="formPengirimanEdit.alamat" :rules="nameRules" label="Alamat" required></v-textarea>
+                        <v-select
+                            class="textfield mt-3"
+                            v-model="formPengirimanEdit.jenisBarang"
+                            :items="[`Makanan`,`Apparel`,`Elektronik`,`Otomotif`,'Furnitur']"
+                            label="Jenis Barang" required 
+                            :rules="inputRules">
+                        </v-select>
+                        <v-select
+                            class="textfield mt-3"
+                            v-model="formPengirimanEdit.jenisPengiriman"
+                            :items="[`Reguler`,`Ekonomis`,`Ekspress`]"
+                            label="Jenis Pengiriman" required 
+                            :rules="inputRules">
+                        </v-select>
+                        <v-select
+                            class="textfield mt-3"
+                            v-model="formPengirimanEdit.berat"
+                            :items="[`<5Kg`,`>5Kg`,`>10Kg`,`>20Kg`,`>30Kg`]"
+                            label="Berat Barang" required 
+                            :rules="inputRules">
+                        </v-select>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="cancelUpdate"> Cancel </v-btn>
+                    <v-btn color="blue darken-1" text @click="saveUpdate"> Save </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-main>
 </template>
 
@@ -74,18 +112,38 @@ export default {
     name: "TambahPengiriman",
     data() {
         return {
-            search: '',
+            search: null,
             dialog: false,
-            pengiriman: [
-            {
-                kodePengiriman: "001",
-                namaPenerima: "Rio",
-                alamat: "Jalan Piranha No. 5, Jakarta",
-                jenisBarang: "Elektronik",
-                jenisPengiriman: "Reguler",
-                berat:"<5Kg",
-            },
+            dialogEdit: false,
+            itemContent: [],
+            indexItem: null,
+            selectedIndex: -1,
+            pengirimans: [
+                {
+                    kodePengiriman: "001",
+                    namaPenerima: "Rio",
+                    alamat: "Jalan Piranha No. 5, Jakarta",
+                    jenisBarang: "Elektronik",
+                    jenisPengiriman: "Reguler",
+                    berat:"<5Kg",
+                },
             ],
+            formPengiriman: {
+                kodePengiriman: null,
+                namaPenerima: null,
+                alamat: null,
+                jenisBarang: null,
+                jenisPengiriman: null,
+                berat:null,
+            },
+            formPengirimanEdit: {
+                kodePengiriman: null,
+                namaPenerima: null,
+                alamat: null,
+                jenisBarang: null,
+                jenisPengiriman: null,
+                berat:null,
+            },
         }
     },
     computed: {
@@ -97,11 +155,13 @@ export default {
           { text: 'Jenis Barang', value: 'jenisBarang' },
           { text: 'Jenis Pengiriman', value: 'jenisPengiriman' },
           { text: 'Berat Barang', value: 'berat' },
+          { text: "Actions", value: "actions" },
         ]
       },
     },
     methods: {
         save() {
+            this.pengirimans.push(this.formPengiriman);
             this.resetForm();
             this.dialog = false;
         },
@@ -109,8 +169,18 @@ export default {
             this.resetForm();
             this.dialog = false;
         },
+        saveUpdate() {
+            Object.assign(this.pengirimans[this.selectedIndex], this.formPengirimanEdit);
+            this.resetForm();
+            this.dialogEdit = false;
+        },
+        cancelUpdate() {
+            this.selectedIndex = -1;
+            this.resetForm();
+            this.dialogEdit = false;
+        },
         resetForm() {
-            this.formTambah = {
+            this.formPengiriman = {
                 kodePengiriman: null,
                 namaPenerima: null,
                 alamat: null,
@@ -118,7 +188,7 @@ export default {
                 jenisPengiriman: null,
                 berat:null,
             };
-            this.formTambahEdit = {
+            this.formPengirimanEdit = {
                 kodePengiriman: null,
                 namaPenerima: null,
                 alamat: null,
@@ -126,6 +196,19 @@ export default {
                 jenisPengiriman: null,
                 berat:null,
             };
+        },
+        deleteItem(item){
+            this.$confirm("Are you sure to delete this?").then(() => {
+                const temp = this.pengirimans.indexOf(item)
+                if(temp > -1){
+                    this.pengirimans.splice(temp, 1)
+                }
+            });
+        },
+        editItem(item) {
+            this.selectedIndex = this.pengirimans.indexOf(item);
+            this.formPengirimanEdit = Object.assign({}, item);
+            this.dialogEdit = true;
         },
     },
 };

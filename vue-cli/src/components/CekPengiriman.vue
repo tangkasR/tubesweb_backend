@@ -10,11 +10,152 @@
                 </v-list-item-content>
             </v-list-item>
         </v-card>
+        <v-card-title>
+            <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" outlined hide details
+                style="margin-top: 30px"></v-text-field>
+            <v-spacer></v-spacer>
+            <v-btn color="success" dark @click="dialog = true"> Tambah </v-btn>
+        </v-card-title>
+        <v-card>
+            <v-data-table :items="ceks" :headers="headers" :search="search" item-key="name" class="elevation-1">
+                <template v-slot:[`item.actions`]="{ item }">
+                    <v-btn class="ma-2" outlined small color="error" @click="dialogEdit = true; itemContent = item; editItem(item)">
+                        <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn @click="deleteItem(item)" class="ma-2" outlined small color="success">
+                        <v-icon> mdi-trash-can-outline</v-icon>
+                    </v-btn>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-dialog transition="dialog-top-transition" v-model="dialog" persistent max-width="600px">
+            <v-card>
+                <v-toolbar color="orange darken-1" dark class="headline">Tambah Konfirmasi Pengiriman</v-toolbar>
+                <v-card-text>
+                    <v-container>
+                        <v-text-field v-model="formCek.kodePengiriman" :rules="nameRules" label="Kode Pengiriman" required></v-text-field>
+                        <v-select
+                            class="textfield mt-3"
+                            v-model="formCek.status"
+                            :items="[`Belum Dikonfirmasi`]"
+                            label="Status" required 
+                            :rules="inputRules">
+                        </v-select>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="cancel"> Cancel </v-btn>
+                    <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <v-dialog transition="dialog-bottom-transition" v-model="dialogEdit" persistent max-width="600px">
+            <v-card>
+                <v-toolbar color="orange darken-1" dark class="headline">Edit Konfirmasi Pengiriman</v-toolbar>
+                <v-card-text>
+                    <v-container>
+                        <v-text-field v-model="formCekEdit.kodePengiriman" :rules="nameRules" label="Kode Pengiriman" required></v-text-field>
+                        <v-select
+                            class="textfield mt-3"
+                            v-model="formCekEdit.status"
+                            :items="[`Belum Dikonfirmasi`]"
+                            label="Status" required 
+                            :rules="inputRules">
+                        </v-select>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="cancelUpdate"> Cancel </v-btn>
+                    <v-btn color="blue darken-1" text @click="saveUpdate"> Save </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-main>
 </template>
 
 <script>
-
+export default {
+    name: "TambahPengiriman",
+    data() {
+        return {
+            search: null,
+            dialog: false,
+            dialogEdit: false,
+            itemContent: [],
+            indexItem: null,
+            selectedIndex: -1,
+            ceks: [
+                {
+                    kodePengiriman: "001",
+                    status:"Belum Dikonfirmasi",
+                },
+            ],
+            formCek: {
+                kodePengiriman: null,
+                status:null,
+            },
+            formCekEdit: {
+                kodePengiriman: null,
+                status:null,
+            },
+        }
+    },
+    computed: {
+      headers () {
+        return [
+          { text: 'Kode Pengiriman', value: 'kodePengiriman' },
+          { text: 'Status', value: 'status' },
+          { text: "Actions", value: "actions" },
+        ]
+      },
+    },
+    methods: {
+        save() {
+            this.ceks.push(this.formCek);
+            this.resetForm();
+            this.dialog = false;
+        },
+        cancel() {
+            this.resetForm();
+            this.dialog = false;
+        },
+        saveUpdate() {
+            Object.assign(this.ceks[this.selectedIndex], this.formCekEdit);
+            this.resetForm();
+            this.dialogEdit = false;
+        },
+        cancelUpdate() {
+            this.selectedIndex = -1;
+            this.resetForm();
+            this.dialogEdit = false;
+        },
+        resetForm() {
+            this.formCek = {
+                kodePengiriman: null,
+                status:null,
+            };
+            this.formCekEdit = {
+                kodePengiriman: null,
+                status:null,
+            };
+        },
+        deleteItem(item){
+            this.$confirm("Are you sure to delete this?").then(() => {
+                const temp = this.ceks.indexOf(item)
+                if(temp > -1){
+                    this.ceks.splice(temp, 1)
+                }
+            });
+        },
+        editItem(item) {
+            this.selectedIndex = this.ceks.indexOf(item);
+            this.formCekEdit = Object.assign({}, item);
+            this.dialogEdit = true;
+        },
+    },
+};
 </script>
 
 <style>
