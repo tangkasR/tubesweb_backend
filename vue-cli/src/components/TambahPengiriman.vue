@@ -17,7 +17,7 @@
             </v-card-title>
         </v-card>
         <v-card>
-            <v-data-table :headers="headers" :search="search" item-key="name" class="elevation-1">
+            <v-data-table :items="pengiriman" :headers="headers" :search="search" item-key="name" class="elevation-1">
                 <template v-slot:[`item.actions`]="{ item }">
                     <v-btn class="ma-2" outlined small color="error" @click="dialogEdit = true; itemContent = item; editItem(item)">
                         <v-icon>mdi-pencil</v-icon>
@@ -71,11 +71,34 @@
 
 <script>
 export default {
-    name: "ProfilUser",
+    name: "TambahPengiriman",
     data() {
         return {
+            search: '',
             dialog: false,
-        };
+            pengiriman: [
+            {
+                kodePengiriman: "001",
+                namaPenerima: "Rio",
+                alamat: "Jalan Piranha No. 5, Jakarta",
+                jenisBarang: "Elektronik",
+                jenisPengiriman: "Reguler",
+                berat:"<5Kg",
+            },
+            ],
+        }
+    },
+    computed: {
+      headers () {
+        return [
+          { text: 'Kode Pengiriman', value: 'kodePengiriman' },
+          { text: 'Nama Penerima', value: 'namaPenerima' },
+          { text: 'Alamat', value: 'alamat' },
+          { text: 'Jenis Barang', value: 'jenisBarang' },
+          { text: 'Jenis Pengiriman', value: 'jenisPengiriman' },
+          { text: 'Berat Barang', value: 'berat' },
+        ]
+      },
     },
     methods: {
         save() {
