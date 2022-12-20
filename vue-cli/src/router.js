@@ -38,11 +38,6 @@ const router = new VueRouter({
             component: importComponent("DashboardLayout"),
             children: [
                 {
-                    path: "/home",
-                    name: "Home",
-                    component: importComponent("HomePage"),
-                },
-                {
                     path: "/buah",
                     name: "Buah",
                     component: importComponent("BuahList"),

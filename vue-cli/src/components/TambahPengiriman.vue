@@ -9,12 +9,103 @@
                     <v-list-item-title class="headline" style="font-weight: bold;">Tambah Pengiriman</v-list-item-title>
                 </v-list-item-content>
             </v-list-item>
+            <v-card-title>
+                <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" outlined hide details
+                    style="margin-top: 30px"></v-text-field>
+                <v-spacer></v-spacer>
+                <v-btn color="success" dark @click="dialog = true"> Tambah </v-btn>
+            </v-card-title>
         </v-card>
+        <v-card>
+            <v-data-table :headers="headers" :search="search" item-key="name" class="elevation-1">
+                <template v-slot:[`item.actions`]="{ item }">
+                    <v-btn class="ma-2" outlined small color="error" @click="dialogEdit = true; itemContent = item; editItem(item)">
+                        <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn @click="deleteItem(item)" class="ma-2" outlined small color="success">
+                        <v-icon> mdi-trash-can-outline</v-icon>
+                    </v-btn>
+                </template>
+            </v-data-table>
+        </v-card>
+        <v-dialog transition="dialog-top-transition" v-model="dialog" persistent max-width="600px">
+            <v-card>
+                <v-toolbar color="orange darken-1" dark class="headline">Tambah Pengiriman</v-toolbar>
+                <v-card-text>
+                    <v-container>
+                        <v-text-field v-model="kodePengiriman" :rules="nameRules" label="Kode Pengiriman" required></v-text-field>
+                        <v-text-field v-model="namaPenerima" :rules="nameRules" label="Nama Penerima" required></v-text-field>
+                        <v-textarea v-model="alamat" :rules="nameRules" label="Alamat" required></v-textarea>
+                        <v-select
+                            class="textfield mt-3"
+                            v-model="jenisBarang"
+                            :items="[`Makanan`,`Apparel`,`Elektronik`,`Otomotif`,'Furnitur']"
+                            label="Jenis Barang" required 
+                            :rules="inputRules">
+                        </v-select>
+                        <v-select
+                            class="textfield mt-3"
+                            v-model="jenisPengiriman"
+                            :items="[`Reguler`,`Ekonomis`,`Ekspress`]"
+                            label="Jenis Pengiriman" required 
+                            :rules="inputRules">
+                        </v-select>
+                        <v-select
+                            class="textfield mt-3"
+                            v-model="berat"
+                            :items="[`<5Kg`,`>5Kg`,`>10Kg`,'>20Kg','>30Kg']"
+                            label="Berat Barang" required 
+                            :rules="inputRules">
+                        </v-select>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" text @click="cancel"> Cancel </v-btn>
+                    <v-btn color="blue darken-1" text @click="save"> Save </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-main>
 </template>
 
 <script>
-
+export default {
+    name: "ProfilUser",
+    data() {
+        return {
+            dialog: false,
+        };
+    },
+    methods: {
+        save() {
+            this.resetForm();
+            this.dialog = false;
+        },
+        cancel() {
+            this.resetForm();
+            this.dialog = false;
+        },
+        resetForm() {
+            this.formTambah = {
+                kodePengiriman: null,
+                namaPenerima: null,
+                alamat: null,
+                jenisBarang: null,
+                jenisPengiriman: null,
+                berat:null,
+            };
+            this.formTambahEdit = {
+                kodePengiriman: null,
+                namaPenerima: null,
+                alamat: null,
+                jenisBarang: null,
+                jenisPengiriman: null,
+                berat:null,
+            };
+        },
+    },
+};
 </script>
 
 <style>

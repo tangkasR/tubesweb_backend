@@ -72,14 +72,14 @@ export default {
             this.dialog = false;
         },
         resetForm() {
-            this.formBuah = {
+            this.formProfil = {
                 name: null,
                 stok: null,
                 harga: null,
                 kondisi: null,
                 penyimpanan: null,
             };
-            this.formBuahEdit = {
+            this.formProfilEdit = {
                 name: null,
                 stok: null,
                 harga: null,

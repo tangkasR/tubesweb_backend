@@ -39,13 +39,12 @@
 </template>
 <script>
     export default {
-        name: "DashboardIndex",
+        name: "TambahPengiriman",
         data() {
             return {
                 drawer: false,
                 group: null,
                 items: [
-                    { title: "Home", to:"/home" },
                     { title: "Buah", to:"/buah" },
                     { title: "Tambah Pengiriman", to:"/add" },
                     { title: "Cek Pengiriman", to:"/cek" },
