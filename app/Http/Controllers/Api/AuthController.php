@@ -53,10 +53,15 @@ class AuthController extends Controller
         
         if(!Auth::attempt($loginData))
 
-            return response(['message' => 'Invalid Credentials'], 401);
+            return response(['message' => 'Username atau Password masih salah'], 401);
 
+        // $user = Auth::user();
         $user = Auth::user();
-
+        if ($user->email_verified_at == NULL) {
+            return response([
+                'message' => 'Mohon Verifikasi Email Terlebih Dahulu!'
+            ], 401);
+        }
         $token = $user->createToken('Authentication Token')->accessToken;
 
         return response([
